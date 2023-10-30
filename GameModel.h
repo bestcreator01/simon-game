@@ -15,10 +15,11 @@ public:
     void displayPatterns(int pattern);
     void displayOriginal(int pattern);
     void computerTurn();
+    void playerTurn();
 
 public slots:
     void gameStarted();
-//    void checkPattern();
+    void checkPattern();
 
 signals:
     void hideStartButton();

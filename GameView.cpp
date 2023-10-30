@@ -22,8 +22,8 @@ GameView::GameView(GameModel& model, QWidget *parent)
     connect(&model, &GameModel::displayBlue, ui->blueButton, &QPushButton::setStyleSheet);
     connect(&model, &GameModel::displayRed, ui->redButton, &QPushButton::setStyleSheet);
 
-//    connect(ui->blueButton, &QPushButton::clicked, &model, &GameModel::__);
-//    connect(ui->redButton, &QPushButton::clicked, &model, &GameModel::__);
+    connect(ui->blueButton, &QPushButton::clicked, &model, &GameModel::checkPattern);
+    connect(ui->redButton, &QPushButton::clicked, &model, &GameModel::checkPattern);
 
 //    connect(ui->blueButton, &QPushButton::clicked, &model, &GameModel::duringGame);
 //    connect(ui->redButton, &QPushButton::clicked, &model, &GameModel::duringGame);

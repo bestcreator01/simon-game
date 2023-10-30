@@ -1,6 +1,6 @@
 #include <QDebug>
-#include <QEventLoop>
 #include <QTimer>
+#include <QPushButton>
 #include "GameModel.h"
 
 GameModel::GameModel(QObject *parent)
@@ -25,13 +25,13 @@ void GameModel::computerTurn()
     emit enableButtons(false);
 
     // generate random pattern and append to computerPatterns
-    int randomNumber = QRandomGenerator::global()->bounded(2);
-    computerPatterns.append(randomNumber);
-//    computerPatterns.append(0);
-//    computerPatterns.append(0);
-//    computerPatterns.append(1);
-//    computerPatterns.append(0);
-//    computerPatterns.append(1);
+//    int randomNumber = QRandomGenerator::global()->bounded(2);
+//    computerPatterns.append(randomNumber);
+    computerPatterns.append(0);
+    computerPatterns.append(0);
+    computerPatterns.append(1);
+    computerPatterns.append(0);
+    computerPatterns.append(1);
 
     int patternTime = 750;
     int originalTime = 1500;
@@ -44,11 +44,39 @@ void GameModel::computerTurn()
         originalTime += 1000;
     }
 
-    // player turn
-
     // enable red and blue buttons
-    emit enableButtons(true);
+    QTimer::singleShot(originalTime + 1000, this, [=]() { emit enableButtons(true);});
+    //emit enableButtons(true);
+}
 
+void GameModel::checkPattern()
+{
+    // retrieve which button is clicked
+    QPushButton* buttonSender = qobject_cast<QPushButton*>(sender());
+    QString buttonText = buttonSender->text();
+
+    int i = 0;
+    if (buttonText == "Blue")
+    {
+        if (computerPatterns[i] == 0)
+        {
+
+        }
+        qDebug() << "blue button clicked";
+        qDebug() << buttonText;
+    }
+    else
+    {
+        if (computerPatterns[i] == 1)
+        {
+
+        }
+
+        qDebug() << "red button clicked";
+        qDebug() << buttonText;
+
+        i++;
+    }
     // while !(computerPatterns is done or wrong),
 
         // for (int pattern: computerPatterns)
@@ -68,7 +96,6 @@ void GameModel::displayPatterns(int pattern)
     {
         emit displayRed("background-color: red");
     }
-    qDebug() << "pattern...";
 }
 
 void GameModel::displayOriginal(int pattern)
@@ -81,7 +108,6 @@ void GameModel::displayOriginal(int pattern)
     {
         emit displayRed("background-color: tomato");
     }
-    qDebug() << "original...";
 }
 
 //void GameModel::gameLost()

@@ -5,14 +5,11 @@
 
 GameModel::GameModel(QObject *parent)
     : QObject(parent)
-    , timer(new QTimer(this))
 {
     totalMoves = 1;
 
 
-    timer->start();
-    //connect(timer, &QTimer::timeout, this, [=]() { displayPatterns(2); });
-    QTimer::singleShot(1000, this, [=]() { displayPatterns(2);});
+//    connect(timer, &QTimer::timeout, this, [=]() { displayPatterns(2); });
 }
 
 void GameModel::gameStarted()
@@ -27,20 +24,24 @@ void GameModel::computerTurn()
     // disable red and blue buttons
     emit enableButtons(false);
 
-    int randomNumber;
-
     // generate random pattern and append to computerPatterns
-    //    randomNumber = QRandomGenerator::global()->bounded(2);
-    //    computerPatterns.append(randomNumber);
-    computerPatterns.append(0);
-    computerPatterns.append(0);
-    computerPatterns.append(1);
-    computerPatterns.append(0);
-    computerPatterns.append(1);
+    int randomNumber = QRandomGenerator::global()->bounded(2);
+    computerPatterns.append(randomNumber);
+//    computerPatterns.append(0);
+//    computerPatterns.append(0);
+//    computerPatterns.append(1);
+//    computerPatterns.append(0);
+//    computerPatterns.append(1);
 
+    int patternTime = 750;
+    int originalTime = 1500;
     for(int pattern : computerPatterns)
     {
-        displayPatterns(pattern);
+        QTimer::singleShot(patternTime, this, [=]() { displayPatterns(pattern);});
+        QTimer::singleShot(originalTime, this, [=]() { displayOriginal(pattern);});
+
+        patternTime += 1000;
+        originalTime += 1000;
     }
 
     // player turn
@@ -63,15 +64,24 @@ void GameModel::displayPatterns(int pattern)
     {
         emit displayBlue("background-color: blue");
     }
-    else if (pattern == 1)
+    else
     {
         emit displayRed("background-color: red");
     }
+    qDebug() << "pattern...";
+}
+
+void GameModel::displayOriginal(int pattern)
+{
+    if (pattern == 0)
+    {
+        emit displayBlue("background-color: skyblue");
+    }
     else
     {
-
+        emit displayRed("background-color: tomato");
     }
-    qDebug() << "timer...";
+    qDebug() << "original...";
 }
 
 //void GameModel::gameLost()

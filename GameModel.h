@@ -13,6 +13,7 @@ public:
     explicit GameModel(QObject *parent = nullptr);
     void duringGame();
     void displayPatterns(int pattern);
+    void displayOriginal(int pattern);
     void computerTurn();
 
 public slots:
@@ -31,7 +32,6 @@ private:
     int totalMoves;
     int currentIndex;
     QList<int> computerPatterns;
-    QTimer *timer;
 };
 
 #endif // GAMEMODEL_H

@@ -1,10 +1,6 @@
 #include "GameModel.h"
 
-GameModel::GameModel(QObject *parent)
-    : QObject(parent)
-{
-    totalMoves = 1;
-}
+GameModel::GameModel(QObject *parent) : QObject(parent) {}
 
 void GameModel::gameStarted()
 {
@@ -13,7 +9,7 @@ void GameModel::gameStarted()
     emit gameLost(false);
     emit updateProgressBar(0);
 
-    currentMoves = 0;
+    currentMoves = 1;
     totalMoves = 0;
     currentIndex = 0;
     computerPatterns.clear();
@@ -24,6 +20,8 @@ void GameModel::computerTurn()
 {
     // reset things
     emit enableButtons(false);
+    currentMoves = 0;
+    currentIndex = 0;
 
     // generate random pattern and append to computerPatterns
     int randomNumber = QRandomGenerator::global()->bounded(2);
@@ -49,11 +47,6 @@ void GameModel::computerTurn()
 
 void GameModel::playerTurn()
 {
-    checkPattern();
-}
-
-void GameModel::checkPattern()
-{
     // retrieve which button is clicked
     QPushButton* buttonSender = qobject_cast<QPushButton*>(sender());
     QString buttonText = buttonSender->text();
@@ -62,32 +55,30 @@ void GameModel::checkPattern()
     {
         if (buttonText == "Blue")
         {
-            checkPatternHelper(0);
+            checkPattern(0);
         }
         else
         {
-            checkPatternHelper(1);
+            checkPattern(1);
         }
     }
 }
 
-void GameModel::checkPatternHelper(int pattern)
+void GameModel::checkPattern(int pattern)
 {
     if (computerPatterns[currentIndex] == pattern)
     {
+        currentMoves++;
+
         if (currentIndex == computerPatterns.length() - 1)
         {
-            // reset variables
-            currentMoves = 0;
-            currentIndex = 0;
-//            emit updateProgressBar(100);
+            emit updateProgressBar(100);
             computerTurn();
         }
         else
         {
-            currentMoves++;
             currentIndex++;
-//            updateProgress();
+            updateProgress();
         }
     }
     else
@@ -100,7 +91,7 @@ void GameModel::checkPatternHelper(int pattern)
 
 void GameModel::updateProgress()
 {
-    int progress = (currentMoves / totalMoves) * 100;
+    int progress = static_cast<int>((static_cast<double>(currentMoves) / totalMoves) * 100);
     emit updateProgressBar(progress);
 }
 

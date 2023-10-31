@@ -2,6 +2,7 @@
 #define GAMEMODEL_H
 
 #include <QPushButton>
+#include <QDebug>
 #include <QObject>
 #include <QTimer>
 #include <QRandomGenerator>
@@ -34,8 +35,7 @@ private:
     int totalMoves;
     int currentIndex;
     QList<int> computerPatterns;
-    void checkPattern();
-    void checkPatternHelper(int pattern);
+    void checkPattern(int pattern);
     void updateProgress();
 };
 

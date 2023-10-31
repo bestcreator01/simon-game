@@ -24,7 +24,7 @@ void GameModel::computerTurn()
     emit enableButtons(false);
     currentMoves = 0;
     currentIndex = 0;
-    QTimer::singleShot(750, this, [=]() { updateProgressBar(0);}); // update progress bar to 0
+    QTimer::singleShot(750, this, [=]() { emit updateProgressBar(0);}); // update progress bar to 0
 
 
     // generate random pattern and append to computerPatterns

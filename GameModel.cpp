@@ -1,37 +1,36 @@
-#include <QDebug>
-#include <QTimer>
-#include <QPushButton>
 #include "GameModel.h"
 
 GameModel::GameModel(QObject *parent)
     : QObject(parent)
 {
     totalMoves = 1;
-
-
-//    connect(timer, &QTimer::timeout, this, [=]() { displayPatterns(2); });
 }
 
 void GameModel::gameStarted()
 {
-    // update start button to be invisible
-    emit hideStartButton();
+    // basic setup
+    emit enableStartButton(false);
+    emit gameLost(false);
+    emit updateProgressBar(0);
+
+    currentMoves = 0;
+    totalMoves = 0;
+    currentIndex = 0;
+    computerPatterns.clear();
     computerTurn();
 }
 
 void GameModel::computerTurn()
 {
-    // disable red and blue buttons
+    // reset things
     emit enableButtons(false);
 
     // generate random pattern and append to computerPatterns
-//    int randomNumber = QRandomGenerator::global()->bounded(2);
-//    computerPatterns.append(randomNumber);
-    computerPatterns.append(0);
-    computerPatterns.append(0);
-    computerPatterns.append(1);
-    computerPatterns.append(0);
-    computerPatterns.append(1);
+    int randomNumber = QRandomGenerator::global()->bounded(2);
+    computerPatterns.append(randomNumber);
+
+    // set up totalMoves
+    totalMoves = computerPatterns.length();
 
     int patternTime = 750;
     int originalTime = 1500;
@@ -45,8 +44,12 @@ void GameModel::computerTurn()
     }
 
     // enable red and blue buttons
-    QTimer::singleShot(originalTime + 1000, this, [=]() { emit enableButtons(true);});
-    //emit enableButtons(true);
+    QTimer::singleShot(originalTime + 500, this, [=]() { emit enableButtons(true);});
+}
+
+void GameModel::playerTurn()
+{
+    checkPattern();
 }
 
 void GameModel::checkPattern()
@@ -55,35 +58,50 @@ void GameModel::checkPattern()
     QPushButton* buttonSender = qobject_cast<QPushButton*>(sender());
     QString buttonText = buttonSender->text();
 
-    int i = 0;
-    if (buttonText == "Blue")
+    if (currentIndex < computerPatterns.length())
     {
-        if (computerPatterns[i] == 0)
+        if (buttonText == "Blue")
         {
-
+            checkPatternHelper(0);
         }
-        qDebug() << "blue button clicked";
-        qDebug() << buttonText;
+        else
+        {
+            checkPatternHelper(1);
+        }
+    }
+}
+
+void GameModel::checkPatternHelper(int pattern)
+{
+    if (computerPatterns[currentIndex] == pattern)
+    {
+        if (currentIndex == computerPatterns.length() - 1)
+        {
+            // reset variables
+            currentMoves = 0;
+            currentIndex = 0;
+//            emit updateProgressBar(100);
+            computerTurn();
+        }
+        else
+        {
+            currentMoves++;
+            currentIndex++;
+//            updateProgress();
+        }
     }
     else
     {
-        if (computerPatterns[i] == 1)
-        {
-
-        }
-
-        qDebug() << "red button clicked";
-        qDebug() << buttonText;
-
-        i++;
+        emit gameLost(true);
+        emit enableStartButton(true);
+        emit enableButtons(false);
     }
-    // while !(computerPatterns is done or wrong),
+}
 
-        // for (int pattern: computerPatterns)
-        //      if current pressed button == pattern
-        //          continue
-        //      else lose = true;
-        //          break;
+void GameModel::updateProgress()
+{
+    int progress = (currentMoves / totalMoves) * 100;
+    emit updateProgressBar(progress);
 }
 
 void GameModel::displayPatterns(int pattern)
@@ -109,13 +127,3 @@ void GameModel::displayOriginal(int pattern)
         emit displayRed("background-color: tomato");
     }
 }
-
-//void GameModel::gameLost()
-//{
-//    // disable all buttons
-//    // disable everything on screen
-//    // except "restart" button
-//    // display YOU LOSE on screen with sound
-//    // Try to make the game startable
-//}
-

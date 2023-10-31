@@ -1,6 +1,7 @@
 #ifndef GAMEMODEL_H
 #define GAMEMODEL_H
 
+#include <QPushButton>
 #include <QObject>
 #include <QTimer>
 #include <QRandomGenerator>
@@ -15,24 +16,27 @@ public:
     void displayPatterns(int pattern);
     void displayOriginal(int pattern);
     void computerTurn();
-    void playerTurn();
 
 public slots:
     void gameStarted();
-    void checkPattern();
+    void playerTurn();
 
 signals:
-    void hideStartButton();
+    void enableStartButton(bool);
     void enableButtons(bool);
     void displayBlue(QString);
     void displayRed(QString);
-//    void gameLost();
+    void gameLost(bool);
+    void updateProgressBar(int);
 
 private:
     int currentMoves;
     int totalMoves;
     int currentIndex;
     QList<int> computerPatterns;
+    void checkPattern();
+    void checkPatternHelper(int pattern);
+    void updateProgress();
 };
 
 #endif // GAMEMODEL_H

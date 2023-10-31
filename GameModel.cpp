@@ -9,10 +9,12 @@ void GameModel::gameStarted()
     emit gameLost(false);
     emit updateProgressBar(0);
 
+    // reset things
     currentMoves = 1;
     totalMoves = 0;
     currentIndex = 0;
     computerPatterns.clear();
+
     computerTurn();
 }
 
@@ -22,6 +24,8 @@ void GameModel::computerTurn()
     emit enableButtons(false);
     currentMoves = 0;
     currentIndex = 0;
+    QTimer::singleShot(750, this, [=]() { updateProgressBar(0);}); // update progress bar to 0
+
 
     // generate random pattern and append to computerPatterns
     int randomNumber = QRandomGenerator::global()->bounded(2);

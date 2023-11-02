@@ -1,3 +1,5 @@
+#include <QMediaPlayer>
+#include <QAudioOutput>
 #include "GameModel.h"
 
 GameModel::GameModel(QObject *parent) : QObject(parent) {}
@@ -38,15 +40,15 @@ void GameModel::computerTurn()
     int originalTime = 1500;
     for(int pattern : computerPatterns)
     {
-        QTimer::singleShot(patternTime, this, [=]() { displayPatterns(pattern);});
-        QTimer::singleShot(originalTime, this, [=]() { displayOriginal(pattern);});
+        QTimer::singleShot(patternTime / (0.5 * computerPatterns.size()), this, [=]() { displayPatterns(pattern);});
+        QTimer::singleShot(originalTime / (0.5 * computerPatterns.size()), this, [=]() { displayOriginal(pattern);});
 
         patternTime += 1000;
         originalTime += 1000;
     }
 
     // enable red and blue buttons
-    QTimer::singleShot(originalTime + 500, this, [=]() { emit enableButtons(true);});
+    QTimer::singleShot(originalTime / (0.5 * computerPatterns.size()) + 100, this, [=]() { emit enableButtons(true);});
 }
 
 void GameModel::playerTurn()
@@ -87,6 +89,7 @@ void GameModel::checkPattern(int pattern)
     }
     else
     {
+        emit playYouLostSound();
         emit gameLost(true);
         emit enableStartButton(true);
         emit enableButtons(false);
@@ -121,4 +124,12 @@ void GameModel::displayOriginal(int pattern)
     {
         emit displayRed("background-color: tomato");
     }
+}
+
+void GameModel::playSound()
+{
+    QMediaPlayer playSound;
+    playSound.setSource(QUrl(":/wav/SpookyBGM.wav"));
+    playSound.setAudioOutput(new QAudioOutput);
+    playSound.play();
 }

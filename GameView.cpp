@@ -14,19 +14,23 @@ GameView::GameView(GameModel& model, QWidget *parent)
     ui->blueButton->setStyleSheet("background-color: skyblue");
     ui->redButton->setStyleSheet("background-color: tomato");
     ui->loseLabel->setVisible(false);
+    ui->scoreLabel->setVisible(false);
+    ui->resultLabel->setVisible(false);
+    ui->resultLabel->setAlignment(Qt::AlignCenter);
     ui->progressBar->setValue(0);
 
-    QPixmap pix (":/png/carvedPumpkin.png");
-    ui->pumpkinImage->setPixmap(pix.scaled(80, 80));
-    ui->pumpkinImage_2->setPixmap(pix.scaled(50, 50));
-    ui->pumpkinImage_3->setPixmap(pix.scaled(30, 30));
-    ui->pumpkinImage_4->setPixmap(pix.scaled(30, 30));
+    QPixmap pumpkin (":/png/carvedPumpkin.png");
+    ui->pumpkinImage->setPixmap(pumpkin.scaled(80, 80));
+    ui->pumpkinImage_2->setPixmap(pumpkin.scaled(50, 50));
+    ui->pumpkinImage_3->setPixmap(pumpkin.scaled(30, 30));
+    ui->pumpkinImage_4->setPixmap(pumpkin.scaled(30, 30));
 
     // start button
     connect(&model, &GameModel::enableStartButton, ui->startButton, &QPushButton::setVisible);
     connect(ui->startButton, &QPushButton::clicked, &model, &GameModel::gameStarted);
+    connect(&model, &GameModel::showScoreLabel, ui->scoreLabel, &QPushButton::setVisible);
 
-    // music playing
+    // music setup
     connect(ui->startButton, &QPushButton::clicked, this, &GameView::playBGM);
 
     // during game
@@ -38,9 +42,12 @@ GameView::GameView(GameModel& model, QWidget *parent)
     connect(ui->blueButton, &QPushButton::clicked, &model, &GameModel::playerTurn);
     connect(ui->redButton, &QPushButton::clicked, &model, &GameModel::playerTurn);
     connect(&model, &GameModel::updateProgressBar, ui->progressBar, &QProgressBar::setValue);
+    connect(&model, &GameModel::updateScore, ui->scoreLabel, &QLabel::setText);
 
     // lost game & stop music
     connect(&model, &GameModel::gameLost, ui->loseLabel, &QLabel::setVisible);
+    connect(&model, &GameModel::showResultLabel, ui->resultLabel, &QLabel::setVisible);
+    connect(&model, &GameModel::updateResult, ui->resultLabel, &QLabel::setText);
     connect(&model, &GameModel::gameLost, this, &GameView::stopBGM);
 }
 

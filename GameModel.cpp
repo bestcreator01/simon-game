@@ -4,16 +4,20 @@ GameModel::GameModel(QObject *parent) : QObject(parent) {}
 
 void GameModel::gameStarted()
 {
-    // basic setup
-    emit enableStartButton(false);
-    emit gameLost(false);
-    emit updateProgressBar(0);
-
     // reset things
+    currentScore = 0;
     currentMoves = 1;
     totalMoves = 0;
     currentIndex = 0;
     computerPatterns.clear();
+
+    // basic setup
+    emit enableStartButton(false);
+    emit gameLost(false);
+    emit updateProgressBar(0);
+    emit showScoreLabel(true);
+    emit showResultLabel(false);
+    emit updateScore("SCORE: " + QString::number(0));
 
     computerTurn();
 }
@@ -70,13 +74,17 @@ void GameModel::playerTurn()
 
 void GameModel::checkPattern(int pattern)
 {
-    if (computerPatterns[currentIndex] == pattern)
+    bool matched = computerPatterns[currentIndex] == pattern;
+    if (matched)
     {
         currentMoves++;
 
         if (currentIndex == computerPatterns.length() - 1)
         {
             emit updateProgressBar(100);
+
+            currentScore++;
+            emit updateScore("SCORE: " + QString::number(currentScore));
             computerTurn();
         }
         else
@@ -88,6 +96,9 @@ void GameModel::checkPattern(int pattern)
     else
     {
         emit gameLost(true);
+        emit showScoreLabel(false);
+        emit showResultLabel(true);
+        emit updateResult("YOUR SCORE IS " + QString::number(currentScore));
         emit enableStartButton(true);
         emit enableButtons(false);
     }

@@ -12,6 +12,7 @@
 #include "GameView.h"
 #include <QApplication>
 
+// main method of this class, set as default
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

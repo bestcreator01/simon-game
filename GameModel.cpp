@@ -1,3 +1,13 @@
+/*
+Author:     Seoin Kim and Gloria Shin
+Date:       Nov-1-2023
+Course:     CS 3505, University of Utah
+Assignment: A6: Qt Simon Game
+
+File Contents
+    This program works as the "model" of this game.
+*/
+
 #include "GameModel.h"
 
 GameModel::GameModel(QObject *parent) : QObject(parent) {}

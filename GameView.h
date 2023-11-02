@@ -1,9 +1,9 @@
 #ifndef GAMEVIEW_H
 #define GAMEVIEW_H
 
-#include <QMainWindow>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QMainWindow>
 #include "GameModel.h"
 
 QT_BEGIN_NAMESPACE
@@ -17,11 +17,15 @@ class GameView : public QMainWindow
 public:
     GameView(GameModel& model, QWidget *parent = nullptr);
     ~GameView();
-    void playMusic();
+
+public slots:
+    void playBGM();
+    void stopBGM();
 
 private:
     Ui::GameView *ui;
-    QMediaPlayer *sound;
-    QAudioOutput *audioOutput;
+
+    QMediaPlayer *bgm;
+    QAudioOutput *bgmOutput;
 };
 #endif // GAMEVIEW_H

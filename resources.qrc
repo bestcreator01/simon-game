@@ -2,8 +2,7 @@
     <qresource prefix="/png">
         <file>carvedPumpkin.png</file>
     </qresource>
-    <qresource prefix="/wav">
-        <file>SpookyBGM.wav</file>
-        <file>youLose.wav</file>
+    <qresource prefix="/mp3">
+        <file>SpookyBGM.mp3</file>
     </qresource>
 </RCC>

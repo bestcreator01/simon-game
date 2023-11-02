@@ -1,5 +1,3 @@
-#include <QMediaPlayer>
-#include <QAudioOutput>
 #include "GameModel.h"
 
 GameModel::GameModel(QObject *parent) : QObject(parent) {}
@@ -10,6 +8,7 @@ void GameModel::gameStarted()
     emit enableStartButton(false);
     emit gameLost(false);
     emit updateProgressBar(0);
+    emit showScoreLabel(true);
 
     // reset things
     currentMoves = 1;
@@ -71,13 +70,17 @@ void GameModel::playerTurn()
 
 void GameModel::checkPattern(int pattern)
 {
-    if (computerPatterns[currentIndex] == pattern)
+    bool matched = computerPatterns[currentIndex] == pattern;
+    if (matched)
     {
         currentMoves++;
 
         if (currentIndex == computerPatterns.length() - 1)
         {
             emit updateProgressBar(100);
+
+            currentScore++;
+            emit updateScore("SCORE: " + QString::number(currentScore));
             computerTurn();
         }
         else
@@ -88,8 +91,10 @@ void GameModel::checkPattern(int pattern)
     }
     else
     {
-        emit playYouLostSound();
         emit gameLost(true);
+        emit showScoreLabel(false);
+        emit showResultLabel(true);
+        emit updateResult("YOUR SCORE IS " + QString::number(currentScore));
         emit enableStartButton(true);
         emit enableButtons(false);
     }
@@ -113,12 +118,4 @@ void GameModel::displayPatterns(int pattern)
         emit displayRed("background-color: red");
         QTimer::singleShot(300, this, [=]() {emit displayRed("background-color: tomato"); });
     }
-}
-
-void GameModel::playSound()
-{
-    QMediaPlayer playSound;
-    playSound.setSource(QUrl(":/wav/SpookyBGM.wav"));
-    playSound.setAudioOutput(new QAudioOutput);
-    playSound.play();
 }

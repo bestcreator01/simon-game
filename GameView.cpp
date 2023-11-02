@@ -5,8 +5,8 @@
 GameView::GameView(GameModel& model, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::GameView)
-    , sound(new QMediaPlayer(this))
-    , audioOutput(new QAudioOutput(this))
+    ,bgm(new QMediaPlayer)
+    ,bgmOutput(new QAudioOutput)
 {
     // basic setup
     ui->setupUi(this);
@@ -14,25 +14,24 @@ GameView::GameView(GameModel& model, QWidget *parent)
     ui->blueButton->setStyleSheet("background-color: skyblue");
     ui->redButton->setStyleSheet("background-color: tomato");
     ui->loseLabel->setVisible(false);
+    ui->scoreLabel->setVisible(false);
+    ui->resultLabel->setVisible(false);
+    ui->resultLabel->setAlignment(Qt::AlignCenter);
     ui->progressBar->setValue(0);
 
+    QPixmap pumpkin (":/png/carvedPumpkin.png");
+    ui->pumpkinImage->setPixmap(pumpkin.scaled(80, 80));
+    ui->pumpkinImage_2->setPixmap(pumpkin.scaled(50, 50));
+    ui->pumpkinImage_3->setPixmap(pumpkin.scaled(30, 30));
+    ui->pumpkinImage_4->setPixmap(pumpkin.scaled(30, 30));
+
     // music setup
-    QMediaPlayer *p = new QMediaPlayer();
-    p->setSource(QUrl(":/wav/SpookyBGM.wav"));
-    p->play();
-
-    QPixmap pix (":/png/carvedPumpkin.png");
-    ui->pumpkinImage->setPixmap(pix.scaled(80, 80));
-    ui->pumpkinImage_2->setPixmap(pix.scaled(50, 50));
-    ui->pumpkinImage_3->setPixmap(pix.scaled(30, 30));
-    ui->pumpkinImage_4->setPixmap(pix.scaled(30, 30));
-
-    // music playing
-    //connect(ui->startButton, &QPushButton::clicked, this, &GameView::playMusic);
+    connect(ui->startButton, &QPushButton::clicked, this, &GameView::playBGM);
 
     // start button
     connect(&model, &GameModel::enableStartButton, ui->startButton, &QPushButton::setVisible);
     connect(ui->startButton, &QPushButton::clicked, &model, &GameModel::gameStarted);
+    connect(&model, &GameModel::showScoreLabel, ui->scoreLabel, &QPushButton::setVisible);
 
     // during game
     connect(&model, &GameModel::enableButtons, ui->blueButton, &QPushButton::setEnabled);
@@ -43,25 +42,33 @@ GameView::GameView(GameModel& model, QWidget *parent)
     connect(ui->blueButton, &QPushButton::clicked, &model, &GameModel::playerTurn);
     connect(ui->redButton, &QPushButton::clicked, &model, &GameModel::playerTurn);
     connect(&model, &GameModel::updateProgressBar, ui->progressBar, &QProgressBar::setValue);
+    connect(&model, &GameModel::updateScore, ui->scoreLabel, &QLabel::setText);
 
     // lost game
     connect(&model, &GameModel::gameLost, ui->loseLabel, &QLabel::setVisible);
-
-    // lost game
-    connect(&model, &GameModel::gameLost, ui->loseLabel, &QLabel::setVisible);
-    //connect(&model, &GameModel::playYouLostSound, sound, &QMediaPlayer::play);
+    connect(&model, &GameModel::showResultLabel, ui->resultLabel, &QLabel::setVisible);
+    connect(&model, &GameModel::updateResult, ui->resultLabel, &QLabel::setText);
+    connect(&model, &GameModel::gameLost, this, &GameView::stopBGM);
 }
 
 GameView::~GameView()
 {
     delete ui;
+    delete bgm;
+    delete bgmOutput;
 }
 
-void GameView::playMusic()
+void GameView::playBGM()
 {
-    sound->setAudioOutput(audioOutput);
-    sound->setSource(QUrl(":/wav/SpookyBGM.wav"));
-    audioOutput->setVolume(80);
-    sound->play();
+    bgm->setAudioOutput(bgmOutput);
+    bgmOutput->setMuted(false);
+    bgm->setSource(QUrl("qrc:/mp3/SpookyBGM.mp3"));
+    bgmOutput->setVolume(0.8);
+    bgm->play();
+}
+
+void GameView::stopBGM()
+{
+    bgm->stop();
 }
 

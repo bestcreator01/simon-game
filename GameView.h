@@ -1,9 +1,9 @@
 #ifndef GAMEVIEW_H
 #define GAMEVIEW_H
 
+#include <QMainWindow>
 #include <QMediaPlayer>
 #include <QAudioOutput>
-#include <QMainWindow>
 #include "GameModel.h"
 
 QT_BEGIN_NAMESPACE

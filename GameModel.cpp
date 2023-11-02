@@ -8,7 +8,6 @@ void GameModel::gameStarted()
     emit enableStartButton(false);
     emit gameLost(false);
     emit updateProgressBar(0);
-    emit showScoreLabel(true);
 
     // reset things
     currentMoves = 1;
@@ -40,6 +39,7 @@ void GameModel::computerTurn()
     for(int pattern : computerPatterns)
     {
         QTimer::singleShot(patternTime / (0.5 * computerPatterns.size()), this, [=]() { displayPatterns(pattern);});
+        QTimer::singleShot(originalTime / (0.5 * computerPatterns.size()), this, [=]() { displayOriginal(pattern);});
 
         patternTime += 1000;
         originalTime += 1000;
@@ -70,17 +70,13 @@ void GameModel::playerTurn()
 
 void GameModel::checkPattern(int pattern)
 {
-    bool matched = computerPatterns[currentIndex] == pattern;
-    if (matched)
+    if (computerPatterns[currentIndex] == pattern)
     {
         currentMoves++;
 
         if (currentIndex == computerPatterns.length() - 1)
         {
             emit updateProgressBar(100);
-
-            currentScore++;
-            emit updateScore("SCORE: " + QString::number(currentScore));
             computerTurn();
         }
         else
@@ -92,9 +88,6 @@ void GameModel::checkPattern(int pattern)
     else
     {
         emit gameLost(true);
-        emit showScoreLabel(false);
-        emit showResultLabel(true);
-        emit updateResult("YOUR SCORE IS " + QString::number(currentScore));
         emit enableStartButton(true);
         emit enableButtons(false);
     }
@@ -111,11 +104,21 @@ void GameModel::displayPatterns(int pattern)
     if (pattern == 0)
     {
         emit displayBlue("background-color: blue");
-        QTimer::singleShot(300, this, [=]() {emit displayBlue("background-color: skyblue"); });
     }
     else
     {
         emit displayRed("background-color: red");
-        QTimer::singleShot(300, this, [=]() {emit displayRed("background-color: tomato"); });
+    }
+}
+
+void GameModel::displayOriginal(int pattern)
+{
+    if (pattern == 0)
+    {
+        emit displayBlue("background-color: skyblue");
+    }
+    else
+    {
+        emit displayRed("background-color: tomato");
     }
 }

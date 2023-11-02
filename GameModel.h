@@ -15,7 +15,6 @@ public:
     explicit GameModel(QObject *parent = nullptr);
     void duringGame();
     void displayPatterns(int pattern);
-    void displayOriginal(int pattern);
     void computerTurn();
     void playSound();
 

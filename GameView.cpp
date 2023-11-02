@@ -46,6 +46,9 @@ GameView::GameView(GameModel& model, QWidget *parent)
 
     // lost game
     connect(&model, &GameModel::gameLost, ui->loseLabel, &QLabel::setVisible);
+
+    // lost game
+    connect(&model, &GameModel::gameLost, ui->loseLabel, &QLabel::setVisible);
     //connect(&model, &GameModel::playYouLostSound, sound, &QMediaPlayer::play);
 }
 
